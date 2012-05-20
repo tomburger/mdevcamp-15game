@@ -3,8 +3,129 @@
   <head>
     <title>mDevCamp 2012 - Lloyd's 15 puzzle</title>
     <script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
+    <script type="text/javascript" charset="utf-8" src="xui-2.3.2.min.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style>
+      body {
+        margin: 0px;
+        font-family: sans-serif;
+      }
+      .board {
+        border: 1px black solid;
+      }
+      .cell {
+        border: 1px gray solid;
+        text-align: center;
+        padding: 0px;
+        cursor: pointer;
+      }
+    </style>
+    <script>
+      x$.ready(function() {
+        fill();
+        resize();
+        scramble(15);
+        resize();
+        x$('.cell').click(function(e) { move(e.target.id); });
+      })
+      function cell(i, j) {
+        return x$('#cell_' + i + '_' + j);
+      }
+      function fill() {
+        for (var i = 1; i <= 4; i++) {
+          for (var j = 1; j <= 4; j++) {
+            var val = (i-1) * 4 + j;
+            if (val <= 15) {
+              cell(i, j).html(val);
+            }
+            else {
+              cell(i, j).html('');
+            }
+          }
+        }
+      }
+      function empty_cell(i, j) {
+        if ((1 <= i) && (i <= 4) && (1 <= j) && (j <= 4)) {
+          var c = cell(i, j);
+          var val = c.html()[0];
+          if (val == '') return c;
+        }
+      }
+      function move(id) {
+        // 01234567
+        // cell_I_J
+        var i = parseInt(id.substring(5, 6));
+        var j = parseInt(id.substring(7));
+
+        // find empty cell...
+        var empty = empty_cell(i, j-1);
+        if (!empty) empty = empty_cell(i+1, j);
+        if (!empty) empty = empty_cell(i, j+1);
+        if (!empty) empty = empty_cell(i-1, j);
+        if (empty) {
+          var c = x$('#'+id);
+          var val = c.html()[0];
+          empty.html( val);
+          c.html('');
+
+        }
+      }
+      function resize() {
+        var width = window.innerWidth,
+            height = window.innerHeight,
+            size = (height < width)? height : width;
+        x$('.board').setStyle('width', size + 'px');
+        x$('.board').setStyle('height', size + 'px');
+        x$('.cell').setStyle('font-size', Math.floor((size/4)*0.7) + 'px');
+      }
+      function scramble(count) {
+        x$('.cell').setStyle('background-color', '');
+        if (count > 0) {
+          var c1 = Math.floor(Math.random()*16),
+              c2 = Math.floor(Math.random()*16);
+          if (c1 != c2) {
+            var i1 = Math.floor(c1/4)+1,
+                j1 = c1-(i1-1)*4+1,
+                i2 = Math.floor(c2/4)+1,
+                j2 = c2-(i2-1)*4+1;
+            var cell1 = cell(i1, j1);
+            var cell2 = cell(i2, j2);
+            var val1 = cell1.html()[0];
+            var val2 = cell2.html()[0]
+            cell1.setStyle('background-color', 'silver').html(val2);
+            cell2.setStyle('background-color', 'silver').html(val1);
+          }
+          setTimeout(function() { scramble(count-1); }, 200 )
+        }
+      }
+    </script>
   </head>
   <body>
+    <table class="board">
+      <tr>
+        <td class="cell" id="cell_1_1"></td>
+        <td class="cell" id="cell_1_2"></td>
+        <td class="cell" id="cell_1_3"></td>
+        <td class="cell" id="cell_1_4"></td>
+      </tr>
+      <tr>
+        <td class="cell" id="cell_2_1"></td>
+        <td class="cell" id="cell_2_2"></td>
+        <td class="cell" id="cell_2_3"></td>
+        <td class="cell" id="cell_2_4"></td>
+      </tr>
+      <tr>
+        <td class="cell" id="cell_3_1"></td>
+        <td class="cell" id="cell_3_2"></td>
+        <td class="cell" id="cell_3_3"></td>
+        <td class="cell" id="cell_3_4"></td>
+      </tr>
+      <tr>
+        <td class="cell" id="cell_4_1"></td>
+        <td class="cell" id="cell_4_2"></td>
+        <td class="cell" id="cell_4_3"></td>
+        <td class="cell" id="cell_4_4"></td>
+      </tr>
+    </table>
   </body>
 </html>
