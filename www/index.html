@@ -24,33 +24,13 @@
     </style>
     <script>
       x$.ready(function() {
-        document.addEventListener('deviceready', onDeviceReady, false);
+        onReady();
       })
-      function onDeviceReady() {
+      function onReady() {
         fill();
         resize();
         scramble(15);
         x$('.cell').click(function(e) { move(e.target.id); });
-        startWatchingShake();
-      }
-      function startWatchingShake() {
-        var lastReading = null;
-        var watching = true;
-        navigator.accelerometer.watchAcceleration(
-          function (coords) {  // success function
-            var current = coords.x + coords.y + coords.z;
-            if (lastReading != null) {
-              if (watching & (Math.abs(current - lastReading) > 10)) {
-                watching = false;
-                scramble(15);
-                watching = true;
-              }
-            };
-            lastReading = current;
-          },
-          function () {},      // error function
-          { frequency: 250 }
-        );
       }
       function cell(i, j) {
         return x$('#cell_' + i + '_' + j);
